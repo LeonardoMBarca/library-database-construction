@@ -1,4 +1,4 @@
-[LOG] [INFO] - [2025-07-24 00:56:15.409354]: [CSV] Books DataFrame:
+[LOG] [INFO] - [2025-07-24 14:21:53.314955]: [CSV] Books DataFrame:
                                        Book  ...               Genre
 0                      A Tale of Two Cities  ...  Historical fiction
 1       The Little Prince (Le Petit Prince)  ...             Novella
@@ -7,20 +7,21 @@
 4            Dream of the Red Chamber (紅樓夢)  ...         Family saga
 
 [5 rows x 6 columns]
-[LOG] [INFO] - [2025-07-24 00:56:15.410208]: [CSV] Authors step started
-[LOG] [INFO] - [2025-07-24 00:56:15.415723]: [CSV] Authors step ended
-[LOG] [INFO] - [2025-07-24 00:56:15.415862]: [CSV] Genre step started
-[LOG] [INFO] - [2025-07-24 00:56:41.582310]: [CSV] Genre step ended
-[LOG] [INFO] - [2025-07-24 00:56:41.582419]: [CSV] Books step started
-[LOG] [INFO] - [2025-07-24 00:56:41.592155]: [CSV] Books step ended
-[LOG] [ERROR] - [2025-07-24 00:56:41.592495]: [CSV] CSV Books successfully saved
-[LOG] [INFO] - [2025-07-24 00:56:41.771700]: [API] Coments DataFrame:
+[LOG] [INFO] - [2025-07-24 14:21:53.315501]: [CSV] Authors step started
+[LOG] [INFO] - [2025-07-24 14:21:53.318824]: [CSV] Authors step ended
+[LOG] [INFO] - [2025-07-24 14:21:53.318872]: [CSV] Genre step started
+[LOG] [INFO] - [2025-07-24 14:22:26.919024]: [CSV] Genre step ended
+[LOG] [INFO] - [2025-07-24 14:22:26.919084]: [CSV] Books step started
+[LOG] [INFO] - [2025-07-24 14:22:26.926968]: [CSV] Books step ended
+[LOG] [INFO] - [2025-07-24 14:22:26.927022]: [CSV] CSV Books successfully saved
+[LOG] [ERROR] - [2025-07-24 14:22:27.317034]: [API] comments DataFrame:
    id                                 livro      nome sobrenome                                     comentario
 0   1                        The Dukan Diet  Danielle   Johnson     Achei a história envolvente e bem escrita.
 1   2  The Lion, the Witch and the Wardrobe    Joshua    Walker                       Esperava mais do enredo.
 2   3             James and the Giant Peach      Jill    Rhodes  Personagens cativantes e trama surpreendente.
 3   4           The Very Hungry Caterpillar  Patricia    Miller     Achei a história envolvente e bem escrita.
 4   5                 Bridget Jones's Diary    Robert   Johnson                     Um dos melhores que já li.
-[LOG] [INFO] - [2025-07-24 00:56:41.776714]: [API] Coments step started
-[LOG] [INFO] - [2025-07-24 00:56:42.049849]: [API] Coments step ended
-[LOG] [INFO] - [2025-07-24 00:56:42.049930]: API Coments successfully saved
+[LOG] [INFO] - [2025-07-24 14:22:27.320777]: [API] comments step started
+[LOG] [INFO] - [2025-07-24 14:22:27.571301]: [API] comments step ended
+[LOG] [INFO] - [2025-07-24 14:22:27.571501]: API comments successfully saved
+[LOG] [INFO] - [2025-07-24 14:22:27.573387]: [DELETE TABLE] Delete tables process started[LOG] [INFO] - [2025-07-24 14:22:27.617693]: [DELETE TABLE] Process Finished[LOG] [INFO] - [2025-07-24 14:22:27.617805]: [CREATE TABLE] Create tables process started[LOG] [INFO] - [2025-07-24 14:22:27.653303]: [CREATE TABLE] Process Finished[LOG] [INFO] - [2025-07-24 14:22:27.653404]: [INSERT DATA] Insert data process started[LOG] [INFO] - [2025-07-24 14:23:44.227441]: [INSERT DATA] Process Finished

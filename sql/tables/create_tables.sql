@@ -1,31 +1,31 @@
 CREATE TABLE authors(
-	author_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(200) NOT NULL
+	author_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
 );
 
 CREATE TABLE genres(
-	genre_id INT PRIMARY KEY AUTO_INCREMENT,
-    genre VARCHAR(100) NOT NULL,
-    genre_pt VARCHAR(100) NOT NULL
+	genre_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    genre TEXT NOT NULL,
+    genre_pt TEXT NOT NULL
 );
 
 CREATE TABLE books(
-	book_id INT PRIMARY KEY AUTO_INCREMENT,
-    book_name VARCHAR(200) NOT NULL, 
-    org_lang VARCHAR(30) NOT NULL,
-    year_published INT NOT NULL,
-    sales DECIMAL(10, 2) NOT NULL,
-    author_id INT NOT NULL,
-    genre_id INT NOT NULL,
+	book_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_name TEXT NOT NULL, 
+    org_lang TEXT NOT NULL,
+    year_published INTEGER NOT NULL,
+    sales REAL NOT NULL,
+    author_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL,
 	FOREIGN KEY (author_id) REFERENCES authors(author_id),
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
 );
 
-CREATE TABLE coments(
-	coment_id INT PRIMARY KEY AUTO_INCREMENT,
-    book_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+CREATE TABLE comments(
+	coment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
     coment TEXT NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books(book_id)
 );

@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from logger import *
 from deep_translator import GoogleTranslator
+from pathlib import Path
 
 class SqlGenerator:
     def __init__(self, csv_path: str, api_key: str, logger_console, logger_file):
@@ -9,12 +10,18 @@ class SqlGenerator:
         self.api_key = api_key
         self.logger_console = logger_console
         self.logger_file = logger_file
+        base_dir = Path(__file__).resolve().parents[2]
+        self.db_path = base_dir / "database" / "library.db"
+        self.insert_dir = base_dir / "sql" / "inserts"
+    
+    def _log(self, msg: str, level="info"):
+        getattr(self.logger_console, f"log_{level}")(msg)
+        getattr(self.logger_file, f"log_{level}")(msg)
     
     def csv_processing(self):
         try:
             df_books = pd.read_csv(self.csv_path)
-            self.logger_console.log_info(f"[CSV] Books DataFrame:\n{df_books.head(5)}\n")
-            self.logger_file.log_info(f"[CSV] Books DataFrame:\n{df_books.head(5)}\n")
+            self._log(f"[CSV] Books DataFrame:\n{df_books.head(5)}\n")
 
             df_books.rename(columns={
                     'Book': 'book',
@@ -28,21 +35,16 @@ class SqlGenerator:
 
             df_books["genre"] = df_books["genre"].fillna("Unknown")
 
-            sql_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "sql", "inserts")
-
-            self.logger_console.log_info("[CSV] Authors step started\n")
-            self.logger_file.log_info("[CSV] Authors step started\n")
+            self._log("[CSV] Authors step started\n")
             authors = pd.DataFrame(df_books["author"].unique(), columns=["author"])
 
-            with open(os.path.join(sql_dir, "authors.sql"), "w", encoding="utf-8") as f:
+            with open(self.insert_dir / "authors.sql", "w", encoding="utf-8") as f:
                 for _, row in authors.iterrows():
                     name = row["author"].replace("'", "''")
                     f.write(f"INSERT INTO authors (name) VALUES ('{name}');\n")
-            self.logger_console.log_info("[CSV] Authors step ended\n")
-            self.logger_file.log_info("[CSV] Authors step ended\n")
+            self._log("[CSV] Authors step ended\n")
 
-            self.logger_console.log_info("[CSV] Genre step started\n")
-            self.logger_file.log_info("[CSV] Genre step started\n")
+            self._log("[CSV] Genre step started\n")
             genres = pd.DataFrame(df_books["genre"].unique(), columns=["genre"])
             genres["genre_pt"] = genres["genre"].apply(
                 lambda x: GoogleTranslator(source="auto", target="pt").translate(x)
@@ -54,16 +56,14 @@ class SqlGenerator:
             genres["genre_pt"] = genres["genre_pt"].replace("Novella", "Novela")
             genres["genre_pt"] = genres["genre_pt"].str.lower()
 
-            with open(os.path.join(sql_dir, "genres.sql"), "w", encoding="utf-8") as f:
+            with open(self.insert_dir /  "genres.sql", "w", encoding="utf-8") as f:
                 for _, row in genres.iterrows():
                     genre = row["genre"].replace("'", "''")
                     genre_pt = row["genre_pt"].replace("'", "''")
-                    f.write(f"INSERT INTO genres (name, name_pt) VALUES ('{genre}', '{genre_pt}');\n")
-            self.logger_console.log_info("[CSV] Genre step ended\n")
-            self.logger_file.log_info("[CSV] Genre step ended\n")
+                    f.write(f"INSERT INTO genres (genre, genre_pt) VALUES ('{genre}', '{genre_pt}');\n")
+            self._log("[CSV] Genre step ended\n")
 
-            self.logger_console.log_info("[CSV] Books step started\n")
-            self.logger_file.log_info("[CSV] Books step started\n")
+            self._log("[CSV] Books step started\n")
             authors["author_id"] = authors.index + 1
             genres["genre_id"] = genres.index + 1
             df_books["book_id"] = df_books.index + 1
@@ -77,7 +77,7 @@ class SqlGenerator:
 
             df_books.drop("original_genre", axis=1, inplace=True, errors="ignore")
             
-            with open(os.path.join(sql_dir, "books.sql"), "w", encoding="utf-8") as f:
+            with open(self.insert_dir /  "books.sql", "w", encoding="utf-8") as f:
                 for _, row in df_books.iterrows():
                     book_name = row["book"].replace("'", "''")
                     org_lang = row["org_lang"].replace("'", "''")
@@ -88,17 +88,14 @@ class SqlGenerator:
                     sql = (f"INSERT INTO books (book_name, org_lang, year_published, sales, author_id, genre_id) "
                             f"VALUES ('{book_name}', '{org_lang}', '{year_published}', '{sales:.2f}', '{author_id}', '{genre_id}');\n")
                     f.write(sql)
-            self.logger_console.log_info("[CSV] Books step ended\n")
-            self.logger_file.log_info("[CSV] Books step ended\n")
+            self._log("[CSV] Books step ended\n")
 
-            self.logger_console.log_error("[CSV] CSV Books successfully saved\n")
-            self.logger_file.log_error("[CSV] CSV Books successfully saved\n")
+            self._log("[CSV] CSV Books successfully saved\n")
 
             return df_books
 
         except Exception as e:
-            self.logger_console.log_error(f"[CSV] {e}\n")
-            self.logger_file.log_error(f"[CSV] {e}\n")
+            self.self._log(f"[CSV] {e}\n", "error")
         
     def api_data_processing(self, df_books):
         def format_value(value):
@@ -111,11 +108,10 @@ class SqlGenerator:
                 return str(value)
             
         try:
-            df_coments = pd.read_json(self.api_key)
-            self.logger_console.log_info(f"[API] Coments DataFrame:\n{df_coments.head(5)}\n")
-            self.logger_file.log_info(f"[API] Coments DataFrame:\n{df_coments.head(5)}\n")
+            df_comments = pd.read_json(self.api_key)
+            self._log(f"[API] comments DataFrame:\n{df_comments.head(5)}\n", "error")
 
-            df_coments.rename(columns={
+            df_comments.rename(columns={
                 'livro': 'book',
                 'nome': 'name', 
                 'sobrenome': 'last_name', 
@@ -125,33 +121,30 @@ class SqlGenerator:
 
             sql_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "sql", "inserts")
 
-            df_coments = df_coments.merge(df_books[["book"]].reset_index().rename(columns={"index": "book_id"}), on="book", how="left")
+            df_comments = df_comments.merge(df_books[["book"]].reset_index().rename(columns={"index": "book_id"}), on="book", how="left")
 
-            df_coments["book_id"] += 1
+            df_comments["book_id"] += 1
 
-            self.logger_console.log_info("[API] Coments step started\n")
-            self.logger_file.log_info("[API] Coments step started\n")
-            with open(os.path.join(sql_dir, "coments.sql"), "w", encoding="utf-8") as f:
-                for _, row in df_coments.iterrows():
+            self._log("[API] comments step started\n")
+            with open(os.path.join(sql_dir, "comments.sql"), "w", encoding="utf-8") as f:
+                for _, row in df_comments.iterrows():
                     values = (
                         format_value(row["book_id"]),
                         format_value(row["name"]),
                         format_value(row["last_name"]),
                         format_value(row["coment"])
                     )
-                    sql = f"INSERT INTO coments (book_id, name, last_name, coment) VALUES ({', '.join(values)});\n"
+                    sql = f"INSERT INTO comments (book_id, name, last_name, coment) VALUES ({', '.join(values)});\n"
                     f.write(sql)
-            self.logger_console.log_info("[API] Coments step ended\n")
-            self.logger_file.log_info("[API] Coments step ended\n")
+            self._log("[API] comments step ended\n")
 
-            self.logger_console.log_info("API Coments successfully saved\n")
-            self.logger_file.log_info("API Coments successfully saved\n")
+            self._log("API comments successfully saved\n")
 
         except Exception as e:
-            step1 = self.logger_console.log_error(f"[API] {e}\n")
+            step1 = self._log(f"[API] {e}\n", "error")
             if step1:
-                self.logger_file.log_error(f"[API] {e}\n")
+                self._log(f"[API] {e}\n", "error")
 
     def execute(self):
         books = self.csv_processing()
-        coments = self.api_data_processing(books)
+        comments = self.api_data_processing(books)
