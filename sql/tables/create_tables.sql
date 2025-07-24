@@ -1,6 +1,3 @@
-CREATE DATABASE digital_library;
-use digital_library;
-
 CREATE TABLE authors(
 	author_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(200) NOT NULL
